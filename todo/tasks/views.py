@@ -7,13 +7,21 @@ from .models import Task
 
 
 def tasklist(request):
-    tasks_list = Task.objects.all().order_by('-created_at')
+    search = request.GET.get('search')
 
-    paginator = Paginator(tasks_list, 4)
+    if search:
 
-    page = request.GET.get('page')
+        tasks = Task.objects.filter(title__icontains=search)
 
-    tasks = paginator.get_page(page)
+    else:
+
+        tasks_list = Task.objects.all().order_by('-created_at')
+
+        paginator = Paginator(tasks_list, 4)
+
+        page = request.GET.get('page')
+
+        tasks = paginator.get_page(page)
 
     return render(request, 'tasks/list.html', {'tasks': tasks})
 
